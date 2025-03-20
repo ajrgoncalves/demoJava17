@@ -2,27 +2,27 @@ package com.example.demo.controllers.authentication;
 
 import com.example.demo.models.User;
 import com.example.demo.repositories.UserRepository;
-import com.example.demo.services.authentication.CustomUserService;
 import com.example.demo.services.authentication.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@RequestMapping("/api/auth")
+@Controller
 public class LoginSignUpController {
 
     @Autowired
-    private UserRepository userRepository;
+    private AuthenticationManager authenticationManager;
 
     @Autowired
     private SecurityConfig securityConfig;
 
     @Autowired
-    private CustomUserService userService;
+    private UserRepository userRepository;
 
     @PostMapping("/login")
     public ResponseEntity<String> login() {

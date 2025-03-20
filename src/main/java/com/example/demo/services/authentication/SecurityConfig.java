@@ -25,12 +25,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
-                .authorizeRequests()
-                .requestMatchers("/api/auth/login", "/api/auth/signup").permitAll() // Allow login/signup without authentication
-                .anyRequest().authenticated()
-                .and()
-                .httpBasic(); // Enable Basic Authentication
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/login")  // Disable CSRF for /login
+                )
+                .authorizeRequests(authorizeRequests ->
+                        authorizeRequests
+                                .requestMatchers("/login").permitAll()  // Allow login without authentication
+                                .anyRequest().authenticated()  // Other endpoints require authentication
+                )
+                .httpBasic();
 
         return http.build();
     }
