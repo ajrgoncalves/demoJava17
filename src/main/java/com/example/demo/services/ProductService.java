@@ -1,7 +1,10 @@
 package com.example.demo.services;
 
+import com.example.demo.models.Category;
 import com.example.demo.models.Product;
+import com.example.demo.repositories.CategoryRepository;
 import com.example.demo.repositories.ProductRepository;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -9,8 +12,12 @@ import java.util.List;
 public class ProductService {
     private final ProductRepository productRepository;
 
-    public ProductService(ProductRepository productRepository) {
+    private final CategoryRepository categoryRepository;
+
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+
         this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     public List<Product> getAllProducts() {
@@ -21,8 +28,16 @@ public class ProductService {
         return productRepository.findById(id).orElse(null);
     }
 
-    public Product createProduct(Product product) {
-        return productRepository.save(product);
+    public Product createProduct(Product product) throws ChangeSetPersister.NotFoundException {
+        Category category = categoryRepository.findById(product.getCategory().getId())
+                .orElseThrow(ChangeSetPersister.NotFoundException::new);
+
+        Product productToInsert = new Product();
+        productToInsert.setName(product.getName());
+        productToInsert.setDescription(product.getDescription());
+        productToInsert.setPrice(product.getPrice());
+        productToInsert.setCategory(category);
+        return productRepository.save(productToInsert);
     }
 
     public Product updateProduct(Long id, Product product) {

@@ -26,12 +26,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/login")  // Disable CSRF for /login
+                        .ignoringRequestMatchers("/login", "/h2-console/**", "/signup", "/api/**")  // Disable CSRF for specific endpoints
                 )
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/login").permitAll()  // Allow login without authentication
+                                .requestMatchers("/login", "/h2-console/**", "/signup", "/api/**").permitAll()  // Allow access to these URLs
                                 .anyRequest().authenticated()  // Other endpoints require authentication
+                )
+                .headers(headers ->
+                        headers.frameOptions().sameOrigin()  // Allow the H2 Console to be displayed in an iframe
                 )
                 .httpBasic();
 

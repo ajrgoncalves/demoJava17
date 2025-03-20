@@ -12,3 +12,7 @@ VALUES (1, 'Basketball', 'Official size basketball', 29.99, 1),
        (4, 'Cycling Gloves', 'Gloves for cycling', 19.99, 2),
        (5, 'Running Shoes', 'Comfortable shoes for long-distance running', 79.99, 3),
        (6, 'Running Shorts', 'Breathable shorts for running', 29.99, 3);
+
+
+ALTER TABLE product ALTER COLUMN id RESTART WITH 1000;
+ALTER TABLE category ALTER COLUMN id RESTART WITH 1000;
