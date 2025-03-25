@@ -1,35 +1,43 @@
 package com.example.demo.services;
 
+import com.example.demo.mappers.CategoryMapper;
 import com.example.demo.models.Category;
+import com.example.demo.modelsDto.CategoryDto;
 import com.example.demo.repositories.CategoryRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class CategoryService {
     private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
         this.categoryRepository = categoryRepository;
+        this.categoryMapper = categoryMapper;
     }
 
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+    public List<CategoryDto> getAllCategories() {
+        List<Category> categories = categoryRepository.findAll();
+
+        return (List<CategoryDto>) categories.stream().map(categoryMapper::mapCategoryToCategoryDto);
     }
 
-    public Category getCategoryById(Long id) {
-        return categoryRepository.findById(id).orElse(null);
+    public CategoryDto getCategoryById(Long id) {
+        return categoryMapper.mapCategoryToCategoryDto(Objects.requireNonNull(categoryRepository.findById(id).orElse(null)));
     }
 
-    public Category createCategory(Category category) {
-        return categoryRepository.save(category);
+    public CategoryDto createCategory(CategoryDto category) {
+        Category newCategory = categoryMapper.mapCategoryDtoToCategory(category);
+        return categoryMapper.mapCategoryToCategoryDto(categoryRepository.save(newCategory));
     }
 
-    public Category updateCategory(Long id, Category category) {
+    public CategoryDto updateCategory(Long id, CategoryDto category) {
         if (categoryRepository.existsById(id)) {
-            category.toBuilder().build();
-            return categoryRepository.save(category);
+            Category mewCategory = categoryMapper.mapCategoryDtoToCategory(category).toBuilder().build();
+            return categoryMapper.mapCategoryToCategoryDto(categoryRepository.save(mewCategory));
         }
         return null;
     }

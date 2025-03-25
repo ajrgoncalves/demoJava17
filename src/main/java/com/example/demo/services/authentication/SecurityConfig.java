@@ -31,7 +31,7 @@ public class SecurityConfig {
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/login", "/h2-console/**", "/signup", "/api/**").permitAll()  // Allow access to these URLs
-                                .anyRequest().authenticated()  // Other endpoints require authentication
+                                .anyRequest().authenticated()
                 )
                 .headers(headers ->
                         headers.frameOptions().sameOrigin()  // Allow the H2 Console to be displayed in an iframe
