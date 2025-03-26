@@ -1,5 +1,6 @@
 package com.example.demo.services.authentication;
 
+import com.example.demo.security.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -25,18 +27,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/login", "/h2-console/**", "/signup", "/api/**")  // Disable CSRF for specific endpoints
-                )
-                .authorizeRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers("/login", "/h2-console/**", "/signup", "/api/**").permitAll()  // Allow access to these URLs
-                                .anyRequest().authenticated()
-                )
-                .headers(headers ->
-                        headers.frameOptions().sameOrigin()  // Allow the H2 Console to be displayed in an iframe
-                )
-                .httpBasic();
+                .csrf().disable()  // Disable CSRF for API usage
+                .authorizeRequests()
+                .requestMatchers("/auth/login", "/api/**").permitAll()  // Allow login and certain endpoints
+                .anyRequest().authenticated()  // Require authentication for all other endpoints
+                .and()
+                .addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class);  // Add JWT filter
 
         return http.build();
     }
@@ -54,7 +50,4 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-
 }
-
