@@ -3,6 +3,7 @@ package com.example.demo.controllers;
 import com.example.demo.modelsDto.ProductDto;
 import com.example.demo.services.ProductService;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,9 +35,9 @@ public class ProductController {
     }
 
     @PostMapping
-    public ProductDto createProduct(@RequestBody ProductDto product) throws ChangeSetPersister.NotFoundException {
-
-        return productService.createProduct(product);
+    public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto product) throws ChangeSetPersister.NotFoundException {
+        ProductDto createdProduct = productService.createProduct(product);
+        return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
