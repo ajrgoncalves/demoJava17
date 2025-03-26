@@ -1,8 +1,8 @@
 package com.example.demo.controllers;
 
-import com.example.demo.models.Category;
 import com.example.demo.modelsDto.CategoryDto;
 import com.example.demo.services.CategoryService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,8 +29,9 @@ public class CategoryController {
     }
 
     @PostMapping
-    public CategoryDto createCategory(@RequestBody CategoryDto Category) {
-        return categoryService.createCategory(Category);
+    public ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryDto Category) {
+        CategoryDto createdCategory = categoryService.createCategory(Category);
+        return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
