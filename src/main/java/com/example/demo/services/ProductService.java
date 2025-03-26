@@ -1,12 +1,16 @@
 package com.example.demo.services;
 
+import com.example.demo.mappers.ProductMapper;
 import com.example.demo.models.Category;
 import com.example.demo.models.Product;
+import com.example.demo.modelsDto.ProductDto;
 import com.example.demo.repositories.CategoryRepository;
 import com.example.demo.repositories.ProductRepository;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ProductService {
@@ -14,22 +18,27 @@ public class ProductService {
 
     private final CategoryRepository categoryRepository;
 
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+    private final ProductMapper productMapper;
+
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, ProductMapper productMapper) {
 
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.productMapper = productMapper;
     }
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductDto> getAllProducts() {
+        List<Product> products = productRepository.findAll();
+
+        return (List<ProductDto>) products.stream().map(productMapper::mapProductToProductDto);
     }
 
-    public Product getProductById(Long id) {
-        return productRepository.findById(id).orElse(null);
+    public ProductDto getProductById(Long id) {
+        return productMapper.mapProductToProductDto(Objects.requireNonNull(productRepository.findById(id).orElse(null)));
     }
 
-    public Product createProduct(Product product) throws ChangeSetPersister.NotFoundException {
-        Category category = categoryRepository.findById(product.getCategory().getId())
+    public ProductDto createProduct(ProductDto product) throws ChangeSetPersister.NotFoundException {
+        Category category = categoryRepository.findById(product.getCategoryId())
                 .orElseThrow(ChangeSetPersister.NotFoundException::new);
 
         Product productToInsert = new Product();
@@ -37,13 +46,13 @@ public class ProductService {
         productToInsert.setDescription(product.getDescription());
         productToInsert.setPrice(product.getPrice());
         productToInsert.setCategory(category);
-        return productRepository.save(productToInsert);
+        return productMapper.mapProductToProductDto(productRepository.save(productToInsert));
     }
 
-    public Product updateProduct(Long id, Product product) {
+    public ProductDto updateProduct(Long id, ProductDto product) {
         if (productRepository.existsById(id)) {
-            product.toBuilder().build();
-            return productRepository.save(product);
+            Product newProduct = productMapper.mapProductDtoToProduct(product).toBuilder().build();
+            return productMapper.mapProductToProductDto(newProduct);
         }
         return null;
     }

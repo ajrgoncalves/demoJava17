@@ -1,25 +1,21 @@
 package com.example.demo.modelsDto;
 
+import com.example.demo.models.Category;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
 
 @Entity
 @Builder(toBuilder = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryDto implements Serializable {
-
+public class ProductDto {
     private long id;
     private String name;
     private String description;
-
+    private double price;
+    private long categoryId;
 }

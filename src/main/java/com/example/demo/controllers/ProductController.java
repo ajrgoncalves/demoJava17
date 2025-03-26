@@ -1,6 +1,6 @@
 package com.example.demo.controllers;
 
-import com.example.demo.models.Product;
+import com.example.demo.modelsDto.ProductDto;
 import com.example.demo.services.ProductService;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> getAllProducts() {
+    public List<ProductDto> getAllProducts() {
         return productService.getAllProducts();
     }
 
@@ -28,20 +28,20 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        Product product = productService.getProductById(id);
+    public ResponseEntity<ProductDto> getProductById(@PathVariable Long id) {
+        ProductDto product = productService.getProductById(id);
         return product != null ? ResponseEntity.ok(product) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public Product createProduct(@RequestBody Product product) throws ChangeSetPersister.NotFoundException {
+    public ProductDto createProduct(@RequestBody ProductDto product) throws ChangeSetPersister.NotFoundException {
 
         return productService.createProduct(product);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
-        Product updatedProduct = productService.updateProduct(id, product);
+    public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id, @RequestBody ProductDto product) {
+        ProductDto updatedProduct = productService.updateProduct(id, product);
         return updatedProduct != null ? ResponseEntity.ok(updatedProduct) : ResponseEntity.notFound().build();
     }
 
